@@ -51,13 +51,20 @@ const Enquiry = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [editMode, setEditMode] = useState(false);
     const [users, setUsers] = useState([]);
+    const [page, setPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
 
     // ================= FETCH ENQUIRIES =================
     const fetchEnquiries = async () => {
         try {
             setLoading(true);
-            const data = await getAllEnquiries(search ? { search } : {});
-            setEnquiries(data);
+            const data = await getAllEnquiries(page, search, itemsPerPage);
+            setEnquiries(data.data || []);
+            setTotalItems(data.total || 0);
+            setTotalPages(data.totalPages || 1);
             setLoading(false);
         } catch (error) {
             setLoading(false);
@@ -70,7 +77,7 @@ const Enquiry = () => {
         try {
             setLoading(true);
             const data = await getAllUsers();
-            console.log('users', data);
+            // console.log('users', data);
             setUsers(data);
             setLoading(false);
         } catch (error) {
@@ -79,10 +86,19 @@ const Enquiry = () => {
         }
     }
 
+    const goToPreviousPage = () => {
+        if (page > 1) setPage(page - 1);
+    };
+
+    const goToNextPage = () => {
+        if (page < totalPages) setPage(page + 1);
+    };
+
+
     useEffect(() => {
         fetchUsers();
         fetchEnquiries();
-    }, []);
+    }, [page, itemsPerPage]);
 
     const handleSearch = () => fetchEnquiries();
 
@@ -205,24 +221,39 @@ const Enquiry = () => {
             </Box>
 
             {/* Top Actions */}
-            <Stack direction={['column', 'row']} align="center" spacing={4} mb={3}>
-                <Stack direction={['column', 'row']} align="center" spacing={4}>
-                    <Input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search Enquiries"
-                        size="md"
-                        maxWidth="200px"
-                        focusBorderColor="green.400"
-                        _focus={{ boxShadow: 'none', borderColor: 'green.400' }}
-                    />
-                    <Button onClick={handleSearch} colorScheme='blue' variant='outline' size='md'>
-                        Search
+            <Stack direction={['column', 'row']} align="center" justifyContent={'space-between'} spacing={4} mb={3}>
+                <Stack spacing={4} display={'flex'} flexDirection={'row'}>
+                    <Stack direction={['column', 'row']} align="center" spacing={4}>
+                        <Input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search Enquiries"
+                            size="md"
+                            maxWidth="200px"
+                            focusBorderColor="green.400"
+                            _focus={{ boxShadow: 'none', borderColor: 'green.400' }}
+                        />
+                        <Button onClick={handleSearch} colorScheme='blue' variant='outline' size='md'>
+                            Search
+                        </Button>
+                    </Stack>
+                    <Button onClick={openAddModal} colorScheme='green' variant='outline' size='md'>
+                        ADD ENQUIRY
                     </Button>
                 </Stack>
-                <Button onClick={openAddModal} colorScheme='green' variant='outline' size='md'>
-                    ADD ENQUIRY
-                </Button>
+                <Stack>
+                    <Select
+                        value={itemsPerPage}
+                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                        maxW="150px"
+                    >
+                        <option value={1}>1</option>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                    </Select>
+                </Stack>
             </Stack>
 
             {/* Table */}
@@ -274,7 +305,23 @@ const Enquiry = () => {
                         )}
                     </Tbody>
                 </Table>
+
             </TableContainer>
+
+            <Stack direction="row" justify="space-between" align="center" mt={4}>
+                <Text>
+                    Showing {(page - 1) * itemsPerPage + 1} – {Math.min(page * itemsPerPage, totalItems)} of {totalItems}
+                </Text>
+                <Stack direction="row" spacing={2}>
+                    <Button onClick={goToPreviousPage} isDisabled={page === 1}>
+                        Previous
+                    </Button>
+                    <Text display={'flex'} alignItems={'center'}>Page {page} of {totalPages}</Text>
+                    <Button onClick={goToNextPage} isDisabled={page === totalPages}>
+                        Next
+                    </Button>
+                </Stack>
+            </Stack>
 
             {/* Modal for Add/Edit */}
             <Modal isOpen={isOpen} onClose={onClose} size="lg">

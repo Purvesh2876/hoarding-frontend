@@ -205,6 +205,30 @@ const Sidebar = ({ isCollapsed, toggleCollapse }) => {
               </Link>
             )}
             {!isMarketingLeadOnly && (isAdmin || isSales || isMarketing) && (
+              <Link to="/customers" style={{ textDecoration: 'none' }}>
+                <Box
+                  as="button"
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="left"
+                  bg={isActive('/customers') ? 'rgba(255,255,255,0.1)' : 'transparent'}
+                  color={isActive('/customers') ? 'white' : '#9DA4AE'}
+                  fontSize="sm"
+                  _hover={{ bg: 'rgba(255,255,255,0.1)', color: 'white' }}
+                  p={2}
+                  borderRadius="md"
+                  border="none"
+                  cursor="pointer"
+                  display="flex"
+                >
+                  <HStack spacing={isCollapsed ? 0 : 4}>
+                    <BsRecordCircle color={isActive('/customers') ? '#9678E1' : '#9DA4AE'} />
+                    {!isCollapsed && <span>Customers</span>}
+                  </HStack>
+                </Box>
+              </Link>
+            )}
+            {!isMarketingLeadOnly && (isAdmin || isSales || isMarketing) && (
               <Link to="/usersHoarding" style={{ textDecoration: 'none' }}>
                 <Box
                   as="button"

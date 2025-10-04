@@ -13,6 +13,8 @@ import MyTeam from './pages/MyTeam';
 import Hoardings from './pages/hoardings-hoardingPage';
 import Enquiry from './pages/hoardings-enquiry';
 import Users from './pages/hoardings-User';
+import Customers from './pages/hoarding-customers';
+import HoardingOrders from './pages/hoarding-orders';
 
 function MainApp() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -75,7 +77,8 @@ function MainApp() {
                   <Route path="/usersHoarding" element={<Users />} />
                   <Route path="/dashboard" element={isMarketingLeadOnly ? <Navigate to="/leads" replace /> : <Dashboard />} />
                   <Route path="/requests" element={isMarketingLeadOnly ? <Navigate to="/leads" replace /> : <Requests />} />
-                  <Route path="/orders" element={isMarketingLeadOnly ? <Navigate to="/leads" replace /> : <OrderPage />} />
+                  <Route path="/orders" element={isMarketingLeadOnly ? <Navigate to="/leads" replace /> : <HoardingOrders />} />
+                  <Route path="/customers" element={isMarketingLeadOnly ? <Navigate to="/leads" replace /> : <Customers />} />
                   <Route
                     path="/hierarchy"
                     element={(isAdmin || isSales || isMarketing) ? <UserHierarchy /> : <Navigate to={isMarketingLeadOnly ? '/leads' : '/dashboard'} replace />}
